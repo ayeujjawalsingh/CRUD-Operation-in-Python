@@ -1,6 +1,10 @@
 import CreateConnection
 import re
 from argon2 import PasswordHasher
+from phonenumbers import carrier
+from phonenumbers.phonenumberutil import number_type
+from datetime import datetime
+from datetime import date, timedelta
 
 fname = ''
 lname = ''
@@ -36,26 +40,52 @@ def update():
         option1 = int(input("Enter Your Choise : "))
         
         if(option1 == 1):
-            dummy = True
-            fname = ""
-            while(dummy):
-                fname = input("Enter Your First Name : ")
-                if(fname==''):
-                    print("Please Write Your First Name")
-                elif fname.replace(" ", "").isalpha():
-                    dummy = False
+            # Extra
+            print("First you need to login and then you able to edit your Name.")
+            email_login = input("Email : ").lower()
+            login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+            try:
+                CreateConnection.cursor.execute(login_querry)
+                data1 = CreateConnection.cursor.fetchall()
+                if(data1[0][0]>0):
+                    password_login = input("Password : ")
+                    pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                    try:
+                        CreateConnection.cursor.execute(pass_query)
+                        data2 = CreateConnection.cursor.fetchall()
+                        ph = PasswordHasher()
+                        if(ph.verify(data2[0][0],password_login)):
+                            dummy = True
+                            fname = ""
+                            while(dummy):
+                                fname = input("Enter Your First Name : ")
+                                if(fname==''):
+                                    print("Please Write Your First Name")
+                                elif fname.replace(" ", "").isalpha():
+                                    dummy = False
+                                else:
+                                    print("First Name Invalid Please Provide Valid First Name")
+                            dummy = True
+                            lname = ""
+                            while(dummy):
+                                lname = input("Enter Your Last Name : ")
+                                if(lname==''):
+                                    print("Please Write Your Last Name")
+                                elif lname.replace(" ", "").isalpha():
+                                    dummy = False
+                                else:
+                                    print("Last Name Invalid Please Provide Valid Last Name")
+                        else:
+                            print("Wrong Password!")
+                    except Exception as e:
+                        print(e)
+                    # print("good")
                 else:
-                    print("First Name Invalid Please Provide Valid First Name")
-            dummy = True
-            lname = ""
-            while(dummy):
-                lname = input("Enter Your Last Name : ")
-                if(lname==''):
-                    print("Please Write Your Last Name")
-                elif lname.replace(" ", "").isalpha():
-                    dummy = False
-                else:
-                    print("Last Name Invalid Please Provide Valid Last Name")
+                    print("Wrong Email")
+            except Exception as e:
+                print("Error")
+            # Extra 
+            
         elif(option1==2):
             dummy = True
             email = ""
@@ -123,13 +153,45 @@ def update():
                         ph = PasswordHasher()
                         if(ph.verify(data2[0][0],password_login)):
                             if(other_option == 1):
-                                address = input("Enter Your Address : ")
+                                dummy = True
+                                while(dummy):
+                                    address = input("Enter Your Address : ")
+                                    if(address==''):
+                                        print("Please Write Your Address")
+                                    elif address.replace(" ", "").isalpha():
+                                        dummy = False
+                                    else:
+                                        print("Address Invalid Please Provide Valid Address")
                             elif(other_option == 2):
-                                city = input("Enter Your City : ")
+                                dummy = True
+                                while(dummy):
+                                    city = input("Enter Your City : ")
+                                    if(city==''):
+                                        print("Please Write Your City")
+                                    elif city.replace(" ", "").isalpha():
+                                        dummy = False
+                                    else:
+                                        print("City Invalid Please Provide Valid City")
                             elif(other_option == 3):
-                                state = input("Enter Your State : ")
+                                dummy = True
+                                while(dummy):
+                                    state = input("Enter Your State : ")
+                                    if(state==''):
+                                        print("Please Write Your State")
+                                    elif state.replace(" ", "").isalpha():
+                                        dummy = False
+                                    else:
+                                        print("State Invalid Please Provide Valid State")
                             elif(other_option == 4):
-                                country = input("Enter Your Country : ")
+                                dummy = True
+                                while(dummy):
+                                    state = input("Enter Your State : ")
+                                    if(state==''):
+                                        print("Please Write Your State")
+                                    elif state.replace(" ", "").isalpha():
+                                        dummy = False
+                                    else:
+                                        print("State Invalid Please Provide Valid State")
                             elif(other_option == 5):
                                 pincode = input("Enter pincode : ")
                             elif(other_option == 6):
@@ -158,11 +220,12 @@ def update():
 
 
 
+
 # ========================================================================================================== #
 
 # Email Verification
 def email_verification(email):
-    pat = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{1,3}$"
+    pat = "^[a-zA-Z0-9.+]+@[a-zA-Z0-9]+\.(com|co\.in|[a-zA-Z]+)$"
     if(email==''):
         return False
     elif re.match(pat,email):
@@ -171,6 +234,27 @@ def email_verification(email):
 
 # ========================================================================================================== #
 
+# Phone Number Verification
+def mobile_verification(mobile):
+    if(mobile==''):
+        return False
+    elif(re.match(r"^(\+91[-\s]?)?[0]?[6789]\d{9}$", mobile)):
+        return True
+    return False
+
+# ========================================================================================================== #
+
+# Pin Code Verification
+def pincode_verification(pin_code):
+    if(pin_code==''):
+        return False
+    elif(re.fullmatch("\d{4}|\d{6}", pin_code)):
+        return True
+    return False
+
+# ========================================================================================================== #
+
+# Password Hashing
 def argon2_algo(password):
     from argon2 import PasswordHasher
     ph = PasswordHasher()
@@ -179,11 +263,56 @@ def argon2_algo(password):
 
 # ==========================================================================================================
 
+# DOB Check
+def is_valid_dob(dob_str):
+    # convert the string to a date object
+    try:
+        dob = datetime.strptime(dob_str, "%d/%m/%Y").date()
+    except ValueError:
+        print("Incorrect date format, should be DD/MM/YYYY")
+        return False
+    
+    # check if the date is in the past
+    if dob >= date.today():
+        print("Date of birth should be in the past")
+        return False
+    
+    # check if the date is not more than 150 years ago
+    if dob <= date.today() - timedelta(days=365.25 * 150):
+        print("Age should not be greater than 150 years")
+        return False
+    
+    return True
 
+# ==========================================================================================================
 
+# Password Syntax Check
+def password_check(password):
+    # check length of password
+    if len(password) < 8:
+        return False
 
+    # check if password has at least one digit
+    if not any(char.isdigit() for char in password):
+        return False
 
+    # check if password has at least one lowercase letter
+    if not any(char.islower() for char in password):
+        return False
 
+    # check if password has at least one uppercase letter
+    if not any(char.isupper() for char in password):
+        return False
 
+    # check if password has at least one special character
+    special_characters = "!@#$%^&*()_+-=[]{};:,.<>/?`~"
+    if not any(char in special_characters for char in password):
+        return False
 
+    # if all conditions are met, return True
+    return True
+
+# ==========================================================================================================
+
+# Call update function
 update()

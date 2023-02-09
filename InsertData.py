@@ -1,6 +1,5 @@
 import CreateConnection
 import re
-import phonenumbers
 from phonenumbers import carrier
 from phonenumbers.phonenumberutil import number_type
 from datetime import datetime
@@ -143,10 +142,8 @@ def insert():
         CreateConnection.cursor.execute(Query)
         CreateConnection.db.commit()
         print("Successful")
-        # Menu.menu()
     except Exception as e:
         print(e)
-        # Menu.menu()
 
 # ========================================================================================================== #
 
