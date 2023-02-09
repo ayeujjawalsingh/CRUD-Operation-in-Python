@@ -1,5 +1,5 @@
 import CreateConnection
 
 def CreateDatabse():
-    CreateConnection.cursor.execute("CREATE DATABASE Care")
+    CreateConnection.cursor.execute("CREATE DATABASE CareNow")
 CreateDatabse()
