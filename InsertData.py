@@ -59,12 +59,12 @@ def insert():
         password = input("Password : ")
         if(password==''):
             print("Please Write your Password")
-            dummy = False
+            dummy = True
         elif(password_check(password)):
             encrypt_password = argon2_algo(password)
-            dummy = True
-        else:
             dummy = False
+        else:
+            dummy = True
     
     # Address
     dummy = True

@@ -1,21 +1,36 @@
 import CreateConnection
 import re
+from argon2 import PasswordHasher
+
+fname = ''
+lname = ''
+mobile = ''
+email = ''
+password = ''
+address = ''
+city = ''
+state =''
+country = ''
+pincode = ''
+dob = ''
+
+
 def update():
-    ch  = input("Enter Your Row Id : ")
-    query2 = "Select * from  user_details where id={}".format(ch)
+    # ch  = input("Enter Your Row Id : ")
+    # query2 = "Select * from  user_details where id={}".format(ch)
     try:
-        CreateConnection.cursor.execute(query2)
-        data = CreateConnection.cursor.fetchall()
-        for x in data:
-            Name = x[1]
-            Mobile = x[2]
-            Email = x[3]
-            Password = x[4]
-            Address = x[5]
-            City = x[6]
-            State = x[7]
-            PinCode = x[8]
-            DateOfBirth = x[9]
+        # CreateConnection.cursor.execute(query2)
+        # data = CreateConnection.cursor.fetchall()
+        # for x in data:
+        #     Name = x[1] 
+        #     Mobile = x[2]
+        #     Email = x[3]
+        #     Password = x[4]
+        #     Address = x[5]
+        #     City = x[6]
+        #     State = x[7]
+        #     PinCode = x[8]
+        #     DateOfBirth = x[9]
         
         print("Choose an Option : \n 1. User Name \n 2. Email \n 3. Password \n 4. Others")
         option1 = int(input("Enter Your Choise : "))
@@ -90,40 +105,48 @@ def update():
 
 
 
+        elif(option1==4):
+            other_option = int(input("Select from these :- \n 1.Address \n 2.City \n 3.State \n 4.Country \n 5.Pin Code \n 6.Date Of Birth \n Enter : "))
+            print("First you need to login and then you able to edit your details.")
+            email_login = input("Email : ").lower()
+            # password_login = input("Password : ")
+            login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+            try:
+                CreateConnection.cursor.execute(login_querry)
+                data1 = CreateConnection.cursor.fetchall()
+                if(data1[0][0]>0):
+                    password_login = input("Password : ")
+                    pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                    try:
+                        CreateConnection.cursor.execute(pass_query)
+                        data2 = CreateConnection.cursor.fetchall()
+                        ph = PasswordHasher()
+                        if(ph.verify(data2[0][0],password_login)):
+                            if(other_option == 1):
+                                address = input("Enter Your Address : ")
+                            elif(other_option == 2):
+                                city = input("Enter Your City : ")
+                            elif(other_option == 3):
+                                state = input("Enter Your State : ")
+                            elif(other_option == 4):
+                                country = input("Enter Your Country : ")
+                            elif(other_option == 5):
+                                pincode = input("Enter pincode : ")
+                            elif(other_option == 6):
+                                dob = input("Enter your date of birth (DD/MM/YYYY) : ")
+                            else:
+                                print("You select wrong option please try again!!")
+                        else:
+                            print("Wrong Password!")
+                    except Exception as e:
+                        print(e)
+                    # print("good")
+                else:
+                    print("Wrong Email")
+            except Exception as e:
+                print("Error")
 
 
-
-
-    #     print("Choose an Option \n 1.Name \n 2.Mobile \n 3.Email \n 4.Password \n 5.Address \n 6.City \n 7.State \n 8.PinCode \n 9.DateOfBirth")
-    #     option = int(input("Enter Your Choise : "))
-    #     if(option==1):
-    #         Name = input("Enter Your Updated Name : ")
-    #     elif(option==2):
-    #         Mobile = input("Enter Your Updated Mobile : ")
-    #     elif(option == 3):
-    #         Email = input("Enter Your Updated Email : ")
-    #     elif(option == 4):
-    #         Password = input("Enter Your Updated Password : ")
-    #     elif(option==5):
-    #         Address = input("Enter Your Updated Address : ")
-    #     elif(option == 6):
-    #         City = input("Enter Your Updated City : ")
-    #     elif(option == 7):
-    #         State = input("Enter Your Updated State : ")
-    #     elif(option==8):
-    #         PinCode = input("Enter Your Updated PinCode : ")
-    #     elif(option == 9):
-    #         DateOfBirth = input("Enter Your Updated DOB (DD/MM/YYYY) : ")
-    #     else:
-    #         print("Wrong Input")
-        
-    #     Query = "Update user_details set Name = '{}',Mobile= '{}',Email= '{}',Password= '{}',Address= '{}',City= '{}',State= '{}',PinCode= '{}',DateOfBirth= '{}' where id = {}".format(Name,Mobile,Email,Password,Address,City,State,PinCode,DateOfBirth,ch)
-    #     try:
-    #         CreateConnection.cursor.execute(Query)
-    #         CreateConnection.db.commit()
-    #         print("Successful")
-    #     except Exception as e:
-    #         print(e)
     except Exception as e:
         print(e)
 
