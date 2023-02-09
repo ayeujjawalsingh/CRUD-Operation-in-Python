@@ -5,3 +5,5 @@ def ShowDatabses():
     # printing all the databases
     for i in CreateConnection.cursor:
         print(i)
+
+ShowDatabses()
