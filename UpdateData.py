@@ -159,27 +159,37 @@ def update():
                     CreateConnection.cursor.execute(login_querry)
                     data1 = CreateConnection.cursor.fetchall()
                     if(data1[0][0]>0):
-                        password_login = input("Password : ")
+                        password_login = input("Old Password : ")
                         pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
                         try:
                             CreateConnection.cursor.execute(pass_query)
-                            data2 = CreateConnection.cursor.fetchall()
+                            old_password_data = CreateConnection.cursor.fetchall()
                             ph = PasswordHasher()
-                            if(ph.verify(data2[0][0],password_login)):
+                            password1 = ''
+                            if(ph.verify(old_password_data[0][0],password_login)):
                                 dummy = True
                                 while(dummy):
-                                    email = input("Email : ")
-                                    if(email_verification(email)):
-                                        dummy = False
+                                    password1 = input("New Password : ")
+                                    password2 = input("Confirm Password : ")
+                                    if(password1 == password2):
+                                        if(password1==''):
+                                            print("Please Write your Password")
+                                            dummy = True
+                                        elif(password_check(password1)):
+                                            encrypt_new_password = argon2_algo(password1)
+                                            old_password_query = "UPDATE user_details SET Password = '{}' WHERE Email = '{}' AND Password = '{}';".format(encrypt_new_password,email_login,old_password_data[0][0])
+                                            try:
+                                                CreateConnection.cursor.execute(old_password_query)
+                                                CreateConnection.db.commit()
+                                                print("Successful")
+                                            except Exception as e:
+                                                print("Error!!")
+                                            dummy = False
+                                        else:
+                                            dummy = True
                                     else:
-                                        print("Wrong Email Please Provide Valid Email")
-                                email_query = "UPDATE user_details SET Email = '{}' WHERE Email = '{}' AND Password = '{}';".format(email,email_login,data2[0][0])
-                                try:
-                                    CreateConnection.cursor.execute(email_query)
-                                    CreateConnection.db.commit()
-                                    print("Successful")
-                                except Exception as e:
-                                    print("Error!!")
+                                        print("Your new password and confirm password are not same..")   
+                                
                             else:
                                 print("Wrong Password!")
                         except Exception as e:
@@ -258,10 +268,10 @@ def update():
                                 pincode = input("PinCode : ")
                                 if(pincode == ""):
                                     dummy = False
-                                    if(pincode_verification(pincode)):
-                                        dummy = False
-                                    else:
-                                        print("Wrong Pin Code Please Provide Valid Pin Code")
+                                if(pincode_verification(pincode)):
+                                    dummy = False
+                                else:
+                                    print("Wrong Pin Code Please Provide Valid Pin Code")
 
                         elif(other_option == 6):
                             dummy = True
