@@ -20,207 +20,270 @@ dob = ''
 
 
 def update():
-    # ch  = input("Enter Your Row Id : ")
-    # query2 = "Select * from  user_details where id={}".format(ch)
-    try:
-        # CreateConnection.cursor.execute(query2)
-        # data = CreateConnection.cursor.fetchall()
-        # for x in data:
-        #     Name = x[1] 
-        #     Mobile = x[2]
-        #     Email = x[3]
-        #     Password = x[4]
-        #     Address = x[5]
-        #     City = x[6]
-        #     State = x[7]
-        #     PinCode = x[8]
-        #     DateOfBirth = x[9]
-        
-        print("Choose an Option : \n 1. User Name \n 2. Email \n 3. Password \n 4. Others")
-        option1 = int(input("Enter Your Choise : "))
-        
-        if(option1 == 1):
-            # Extra
-            print("First you need to login and then you able to edit your Name.")
-            email_login = input("Email : ").lower()
-            login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
-            try:
-                CreateConnection.cursor.execute(login_querry)
-                data1 = CreateConnection.cursor.fetchall()
-                if(data1[0][0]>0):
-                    password_login = input("Password : ")
-                    pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
-                    try:
-                        CreateConnection.cursor.execute(pass_query)
-                        data2 = CreateConnection.cursor.fetchall()
-                        ph = PasswordHasher()
-                        if(ph.verify(data2[0][0],password_login)):
-                            dummy = True
-                            fname = ""
-                            while(dummy):
-                                fname = input("Enter Your First Name : ")
-                                if(fname==''):
-                                    print("Please Write Your First Name")
-                                elif fname.replace(" ", "").isalpha():
-                                    dummy = False
-                                else:
-                                    print("First Name Invalid Please Provide Valid First Name")
-                            dummy = True
-                            lname = ""
-                            while(dummy):
-                                lname = input("Enter Your Last Name : ")
-                                if(lname==''):
-                                    print("Please Write Your Last Name")
-                                elif lname.replace(" ", "").isalpha():
-                                    dummy = False
-                                else:
-                                    print("Last Name Invalid Please Provide Valid Last Name")
-                        else:
-                            print("Wrong Password!")
-                    except Exception as e:
-                        print(e)
-                    # print("good")
-                else:
-                    print("Wrong Email")
-            except Exception as e:
-                print("Error")
-            # Extra 
-            
-        elif(option1==2):
-            dummy = True
-            email = ""
-            while(dummy):
-                email = input("Email : ")
-                if(email_verification(email)):
-                    dummy = False
-                else:
-                    print("Wrong Email Please Provide Valid Email")
+    print("Choose an Option : \n 1. User Name \n 2. Email \n 3. Password \n 4. Others")
+    option1 = int(input("Enter Your Choise : "))
+    
+# Update User Name Section Complete
+    
+    if(option1 == 1):
+        print("First you need to login and then you able to edit your Name.")
+        email_login = input("Email : ").lower()
+        login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+        try:
+            CreateConnection.cursor.execute(login_querry)
+            data1 = CreateConnection.cursor.fetchall()
+            if(data1[0][0]>0):
+                password_login = input("Password : ")
+                pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                try:
+                    print("Enter 1")
+                    CreateConnection.cursor.execute(pass_query)
+                    data2 = CreateConnection.cursor.fetchall()
+                    ph = PasswordHasher()
+                    print("Enter 2")
+                    if(ph.verify(data2[0][0],password_login)):
+                        dummy = True
+                        fname = ""
+                        print("Enter 3")
+                        while(dummy):
+                            fname = input("Enter Your First Name : ")
+                            if(fname==''):
+                                print("Please Write Your First Name")
+                            elif fname.replace(" ", "").isalpha():
+                                dummy = False
+                            else:
+                                print("First Name Invalid Please Provide Valid First Name")
+                        dummy = True
+                        lname = ""
+                        while(dummy):
+                            lname = input("Enter Your Last Name : ")
+                            if(lname==''):
+                                print("Please Write Your Last Name")
+                            elif lname.replace(" ", "").isalpha():
+                                dummy = False
+                            else:
+                                print("Last Name Invalid Please Provide Valid Last Name")
+                        name_query = "UPDATE user_details SET Name = '{}' WHERE Email = '{}' AND Password = '{}';".format(fname,email_login,data2[0][0])
+                        try:
+                            print("Enter")
+                            CreateConnection.cursor.execute(name_query)
+                            CreateConnection.db.commit()
+                            print("Successful")
+                        except Exception as e:
+                            print("Error!!")
+                    else:
+                        print("Wrong Password!")
+                except Exception as e:
+                    print(e)
+            else:
+                print("Wrong Email")
+        except Exception as e:
+            print("Error")
 
-        elif(option1==3):
-            ans = input("Do You Want to change Your Password : (Y/N) ")
-            if(ans == "Y" or ans == "y"):
-                optpass = int(input("We must first confirm that you are a genuine individual \n Please select these option \n 1. Email \n 2. Mobile 3. Old Password \n Select : "))
-                if(optpass == 1):
-                    em = input("Enter your email : ")
-                    QueryEmailPass = "Select Email From user_details"
-                    try:
-                        CreateConnection.cursor.execute(QueryEmailPass)
-                        email_pass = CreateConnection.cursor.fetchall()
-                        print(type(email_pass[1]))
-                        if em in email_pass:
-                            dob_pass = input("Please provide your Date Of Birth (DD/MM/YYYY) : ")
-                            QueryDobPass = "SELECT DateOfBirth FROM person WHERE name = '{}';".format(em)
-                            try:
-                                CreateConnection.cursor.execute(QueryDobPass)
-                                dobemailpass = CreateConnection.cursor.fetchall()
-                                if(dob_pass == dobemailpass):
-                                    pas = input("Enter New Password : ")
-                                    encrypt_password = argon2_algo(pas)
-                            except Exception as e:
-                                print("Error")
-                        else:
-                            print('Please provide a validate email..')
+# Update Email Section
+ 
+    elif(option1==2):
+        print("First you need to login and then you able to edit your Email.")
+        email_login = input("Email : ").lower()
+        login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+        try:
+            CreateConnection.cursor.execute(login_querry)
+            data1 = CreateConnection.cursor.fetchall()
+            if(data1[0][0]>0):
+                password_login = input("Password : ")
+                pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                try:
+                    CreateConnection.cursor.execute(pass_query)
+                    data2 = CreateConnection.cursor.fetchall()
+                    ph = PasswordHasher()
+                    if(ph.verify(data2[0][0],password_login)):
+                        dummy = True
+                        while(dummy):
+                            email = input("Email : ")
+                            if(email_verification(email)):
+                                dummy = False
+                            else:
+                                print("Wrong Email Please Provide Valid Email")
+                        email_query = "UPDATE user_details SET Email = '{}' WHERE Email = '{}' AND Password = '{}';".format(email,email_login,data2[0][0])
+                        try:
+                            CreateConnection.cursor.execute(email_query)
+                            CreateConnection.db.commit()
+                            print("Successful")
+                        except Exception as e:
+                            print("Error!!")
+                    else:
+                        print("Wrong Password!")
+                except Exception as e:
+                    print(e)
+            else:
+                print("Wrong Email")
+        except Exception as e:
+            print("Error")
+
+# Update Password Section
+
+    elif(option1==3):
+        ans = input("Do You Want to change Your Password : (Y/N) ")
+        if(ans == "Y" or ans == "y"):
+            option_password = int(input("We must first confirm that you are a genuine person or not, \n Please select these option \n 1. Email \n 2. Mobile \n 3. Old Password \n Select : "))
+            if(option_password == 1):
+                em = input("Enter your email : ")
+                QueryEmailPass = "Select Email From user_details"
+                try:
+                    CreateConnection.cursor.execute(QueryEmailPass)
+                    email_pass = CreateConnection.cursor.fetchall()
+                    print(type(email_pass[1]))
+                    if em in email_pass:
+                        dob_pass = input("Please provide your Date Of Birth (DD/MM/YYYY) : ")
+                        QueryDobPass = "SELECT DateOfBirth FROM person WHERE name = '{}';".format(em)
+                        try:
+                            CreateConnection.cursor.execute(QueryDobPass)
+                            dobemailpass = CreateConnection.cursor.fetchall()
+                            if(dob_pass == dobemailpass):
+                                pas = input("Enter New Password : ")
+                                encrypt_password = argon2_algo(pas)
+                        except Exception as e:
+                            print("Error")
+                    else:
+                        print('Please provide a validate email..')
                         
                             
-                    except Exception as e:
-                        print(e)
+                except Exception as e:
+                    print(e)
             
-            
-            
-            
-            
-            
-            elif(ans == 'N' | ans == 'n'):
-                print("Good Habbit!! Don't Forget Your Password")
-
-
-
-        elif(option1==4):
-            other_option = int(input("Select from these :- \n 1.Address \n 2.City \n 3.State \n 4.Country \n 5.Pin Code \n 6.Date Of Birth \n Enter : "))
-            print("First you need to login and then you able to edit your details.")
-            email_login = input("Email : ").lower()
-            # password_login = input("Password : ")
-            login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
-            try:
-                CreateConnection.cursor.execute(login_querry)
-                data1 = CreateConnection.cursor.fetchall()
-                if(data1[0][0]>0):
-                    password_login = input("Password : ")
-                    pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
-                    try:
-                        CreateConnection.cursor.execute(pass_query)
-                        data2 = CreateConnection.cursor.fetchall()
-                        ph = PasswordHasher()
-                        if(ph.verify(data2[0][0],password_login)):
-                            if(other_option == 1):
+            elif(option_password==3):
+                print("First you need to login : ")
+                email_login = input("Email : ").lower()
+                login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+                try:
+                    CreateConnection.cursor.execute(login_querry)
+                    data1 = CreateConnection.cursor.fetchall()
+                    if(data1[0][0]>0):
+                        password_login = input("Password : ")
+                        pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                        try:
+                            CreateConnection.cursor.execute(pass_query)
+                            data2 = CreateConnection.cursor.fetchall()
+                            ph = PasswordHasher()
+                            if(ph.verify(data2[0][0],password_login)):
                                 dummy = True
                                 while(dummy):
-                                    address = input("Enter Your Address : ")
-                                    if(address==''):
-                                        print("Please Write Your Address")
-                                    elif address.replace(" ", "").isalpha():
+                                    email = input("Email : ")
+                                    if(email_verification(email)):
                                         dummy = False
                                     else:
-                                        print("Address Invalid Please Provide Valid Address")
-                            elif(other_option == 2):
-                                dummy = True
-                                while(dummy):
-                                    city = input("Enter Your City : ")
-                                    if(city==''):
-                                        print("Please Write Your City")
-                                    elif city.replace(" ", "").isalpha():
-                                        dummy = False
-                                    else:
-                                        print("City Invalid Please Provide Valid City")
-                            elif(other_option == 3):
-                                dummy = True
-                                while(dummy):
-                                    state = input("Enter Your State : ")
-                                    if(state==''):
-                                        print("Please Write Your State")
-                                    elif state.replace(" ", "").isalpha():
-                                        dummy = False
-                                    else:
-                                        print("State Invalid Please Provide Valid State")
-                            elif(other_option == 4):
-                                dummy = True
-                                while(dummy):
-                                    state = input("Enter Your State : ")
-                                    if(state==''):
-                                        print("Please Write Your State")
-                                    elif state.replace(" ", "").isalpha():
-                                        dummy = False
-                                    else:
-                                        print("State Invalid Please Provide Valid State")
-                            elif(other_option == 5):
-                                pincode = input("Enter pincode : ")
-                            elif(other_option == 6):
-                                dob = input("Enter your date of birth (DD/MM/YYYY) : ")
+                                        print("Wrong Email Please Provide Valid Email")
+                                email_query = "UPDATE user_details SET Email = '{}' WHERE Email = '{}' AND Password = '{}';".format(email,email_login,data2[0][0])
+                                try:
+                                    CreateConnection.cursor.execute(email_query)
+                                    CreateConnection.db.commit()
+                                    print("Successful")
+                                except Exception as e:
+                                    print("Error!!")
                             else:
-                                print("You select wrong option please try again!!")
+                                print("Wrong Password!")
+                        except Exception as e:
+                            print(e)
+                    else:
+                        print("Wrong Email")
+                except Exception as e:
+                    print("Error")
+            
+        elif(ans == 'N' | ans == 'n'):
+            print("Good Habbit!! Don't Forget Your Password")
+        else:
+            print("Please choose correct option...")
+
+# Update Others Section Complete
+
+    elif(option1==4):
+        other_option = int(input("Select from these :- \n 1.Address \n 2.City \n 3.State \n 4.Country \n 5.Pin Code \n 6.Date Of Birth \n Enter : "))
+        print("First you need to login and then you able to edit your details.")
+        email_login = input("Email : ").lower()
+        login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+        try:
+            CreateConnection.cursor.execute(login_querry)
+            data1 = CreateConnection.cursor.fetchall()
+            if(data1[0][0]>0):
+                password_login = input("Password : ")
+                pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                try:
+                    CreateConnection.cursor.execute(pass_query)
+                    data2 = CreateConnection.cursor.fetchall()
+                    ph = PasswordHasher()
+                    if(ph.verify(data2[0][0],password_login)):
+                        if(other_option == 1):
+                            dummy = True
+                            while(dummy):
+                                address = input("Enter Your Address : ")
+                                if(address==''):
+                                    print("Please Write Your Address")
+                                elif address.replace(" ", "").isalpha():
+                                    dummy = False
+                                else:
+                                    print("Address Invalid Please Provide Valid Address")
+                        elif(other_option == 2):
+                            dummy = True
+                            while(dummy):
+                                city = input("Enter Your City : ")
+                                if(city==''):
+                                    print("Please Write Your City")
+                                elif city.replace(" ", "").isalpha():
+                                    dummy = False
+                                else:
+                                    print("City Invalid Please Provide Valid City")
+                        elif(other_option == 3):
+                            dummy = True
+                            while(dummy):
+                                state = input("Enter Your State : ")
+                                if(state==''):
+                                    print("Please Write Your State")
+                                elif state.replace(" ", "").isalpha():
+                                    dummy = False
+                                else:
+                                    print("State Invalid Please Provide Valid State")
+                        elif(other_option == 4):
+                            dummy = True
+                            while(dummy):
+                                state = input("Enter Your State : ")
+                                if(state==''):
+                                    print("Please Write Your State")
+                                elif state.replace(" ", "").isalpha():
+                                    dummy = False
+                                else:
+                                    print("State Invalid Please Provide Valid State")
+                        elif(other_option == 5):
+                            dummy = True
+                            while(dummy):
+                                pincode = input("PinCode : ")
+                                if(pincode == ""):
+                                    dummy = False
+                                    if(pincode_verification(pincode)):
+                                        dummy = False
+                                    else:
+                                        print("Wrong Pin Code Please Provide Valid Pin Code")
+
+                        elif(other_option == 6):
+                            dummy = True
+                            while(dummy):
+                                dob = input("Enter your date of birth (DD/MM/YYYY) : ")
+                                if(is_valid_dob(dob)):
+                                    dummy = False
+                                else:
+                                    print("Incorrect DOB!")
+                                    dummy = True
                         else:
-                            print("Wrong Password!")
-                    except Exception as e:
-                        print(e)
-                    # print("good")
-                else:
-                    print("Wrong Email")
-            except Exception as e:
-                print("Error")
-
-
-    except Exception as e:
-        print(e)
-
-
-
-
-
-
-
-
-
-
+                            print("You select wrong option please try again!!")
+                    else:
+                        print("Wrong Password!")
+                except Exception as e:
+                    print(e)
+            else:
+                print("Wrong Email")
+        except Exception as e:
+            print("Error")
+    else:
+        print("Please choose correct option!!")
 # ========================================================================================================== #
 
 # Email Verification
