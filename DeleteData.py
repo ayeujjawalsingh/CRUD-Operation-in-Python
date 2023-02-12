@@ -1,8 +1,8 @@
 import CreateConnection
 
 def delete():
-    ch  = input("Enter Your Row Id : ")
-    query2 = "delete from user_details where id={}".format(ch)
+    ch  = input("Enter Your Email : ")
+    query2 = "UPDATE user_details SET status = 2 WHERE email = '{}';".format(ch)
     try:
         CreateConnection.cursor.execute(query2)
         CreateConnection.db.commit()
