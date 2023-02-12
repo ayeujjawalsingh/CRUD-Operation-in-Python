@@ -22,7 +22,7 @@ import psycopg2
  
 # Establishing the connection
 db = psycopg2.connect(
-    # database="CareNow",
+    database="CareNow",
     user='postgres',
     password='1234',
     host='localhost',

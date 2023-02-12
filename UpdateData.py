@@ -6,17 +6,17 @@ from phonenumbers.phonenumberutil import number_type
 from datetime import datetime
 from datetime import date, timedelta
 
-fname = ''
-lname = ''
-mobile = ''
-email = ''
-password = ''
-address = ''
-city = ''
-state =''
-country = ''
-pincode = ''
-dob = ''
+# fname = ''
+# lname = ''
+# mobile = ''
+# email = ''
+# password = ''
+# address = ''
+# city = ''
+# state =''
+# country = ''
+# pincode = ''
+# dob = ''
 
 
 def update():
@@ -28,13 +28,13 @@ def update():
     if(option1 == 1):
         print("First you need to login and then you able to edit your Name.")
         email_login = input("Email : ").lower()
-        login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+        login_querry = "SELECT COUNT(email_id) FROM user_details WHERE email_id = '{}';".format(email_login)
         try:
             CreateConnection.cursor.execute(login_querry)
             data1 = CreateConnection.cursor.fetchall()
             if(data1[0][0]>0):
                 password_login = input("Password : ")
-                pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                pass_query = "SELECT password FROM user_details WHERE email_id = '{}';".format(email_login)
                 try:
                     CreateConnection.cursor.execute(pass_query)
                     data2 = CreateConnection.cursor.fetchall()
@@ -60,9 +60,8 @@ def update():
                                 dummy = False
                             else:
                                 print("Last Name Invalid Please Provide Valid Last Name")
-                        name_query = "UPDATE user_details SET Name = '{}' WHERE Email = '{}' AND Password = '{}';".format(fname,email_login,data2[0][0])
+                        name_query = "UPDATE user_details SET first_name = '{}', last_name = '{}' WHERE email_id = '{}' AND password = '{}';".format(fname,lname,email_login,data2[0][0])
                         try:
-                            print("Enter")
                             CreateConnection.cursor.execute(name_query)
                             CreateConnection.db.commit()
                             print("Successful")
@@ -82,13 +81,13 @@ def update():
     elif(option1==2):
         print("First you need to login and then you able to edit your Email.")
         email_login = input("Email : ").lower()
-        login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+        login_querry = "SELECT COUNT(email_id) FROM user_details WHERE email_id = '{}';".format(email_login)
         try:
             CreateConnection.cursor.execute(login_querry)
             data1 = CreateConnection.cursor.fetchall()
             if(data1[0][0]>0):
                 password_login = input("Password : ")
-                pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                pass_query = "SELECT password FROM user_details WHERE email_id = '{}';".format(email_login)
                 try:
                     CreateConnection.cursor.execute(pass_query)
                     data2 = CreateConnection.cursor.fetchall()
@@ -101,7 +100,7 @@ def update():
                                 dummy = False
                             else:
                                 print("Wrong Email Please Provide Valid Email")
-                        email_query = "UPDATE user_details SET Email = '{}' WHERE Email = '{}' AND Password = '{}';".format(email,email_login,data2[0][0])
+                        email_query = "UPDATE user_details SET email_id = '{}' WHERE email_id = '{}' AND password = '{}';".format(email,email_login,data2[0][0])
                         try:
                             CreateConnection.cursor.execute(email_query)
                             CreateConnection.db.commit()
@@ -128,13 +127,13 @@ def update():
             if(option_password == 1):
                 print("Update Password Using Email")
                 email_id = input("Email : ").lower()
-                update_query_email = "SELECT COUNT(Email) FROM user_details WHERE Email = '{}';".format(email_id)
+                update_query_email = "SELECT COUNT(email_id) FROM user_details WHERE email_id = '{}';".format(email_id)
                 try:
                     CreateConnection.cursor.execute(update_query_email)
                     email_id_data = CreateConnection.cursor.fetchall()
                     if(email_id_data[0][0]>0):
                         email_dob = input("Enter your Date of Birth (DD/MM/YYYY) : ")
-                        email_dob_query = "SELECT DateOfBirth FROM user_details WHERE Email = '{}';".format(email_id)
+                        email_dob_query = "SELECT date_of_birth FROM user_details WHERE email_id = '{}';".format(email_id)
                         try:
                             CreateConnection.cursor.execute(email_dob_query)
                             email_dob_data = CreateConnection.cursor.fetchall()
@@ -150,7 +149,7 @@ def update():
                                             dummy = True
                                         elif(password_check(email_password1)):
                                             email_encrypt_new_password = argon2_algo(email_password1)
-                                            email_pass_query = "UPDATE user_details SET Password = '{}' WHERE Email = '{}' AND DateOfBirth = '{}';".format(email_encrypt_new_password,email_id,email_dob)
+                                            email_pass_query = "UPDATE user_details SET password = '{}' WHERE email_id = '{}' AND date_of_birth = '{}';".format(email_encrypt_new_password,email_id,email_dob)
                                             try:
                                                 CreateConnection.cursor.execute(email_pass_query)
                                                 CreateConnection.db.commit()
@@ -175,20 +174,17 @@ def update():
             elif(option_password==2):
                 print("Update Password Using Mobile Number : ")
                 mobile_number = input("Mobile Number : ")
-                update_query_mobile = "SELECT COUNT(Mobile) FROM user_details WHERE Mobile = '{}';".format(mobile_number)
+                update_query_mobile = "SELECT COUNT(mobile_number) FROM user_details WHERE mobile_number = '{}';".format(mobile_number)
                 try:
                     CreateConnection.cursor.execute(update_query_mobile)
                     mobile_number_data = CreateConnection.cursor.fetchall()
                     if(mobile_number_data[0][0]>0):
-                        print(mobile_number_data[0][0])
                         mob_dob = input("Enter your Date of Birth (DD/MM/YYYY) : ")
-                        mob_dob_query = "SELECT DateOfBirth FROM user_details WHERE Mobile = '{}';".format(mobile_number)
+                        mob_dob_query = "SELECT date_of_birth FROM user_details WHERE mobile_number = '{}';".format(mobile_number)
                         try:
                             CreateConnection.cursor.execute(mob_dob_query)
                             mob_dob_data = CreateConnection.cursor.fetchall()
-                            print(mob_dob_data)
                             if(mob_dob_data[0][0]==mob_dob):
-                                print("Mob Enter 2")
                                 dummy = True
                                 mob_password1 = ''
                                 while(dummy):
@@ -200,7 +196,7 @@ def update():
                                             dummy = True
                                         elif(password_check(mob_password1)):
                                             mob_encrypt_new_password = argon2_algo(mob_password1)
-                                            mob_pass_query = "UPDATE user_details SET Password = '{}' WHERE Mobile = '{}' AND DateOfBirth = '{}';".format(mob_encrypt_new_password,mobile_number_data[0][0],mob_dob)
+                                            mob_pass_query = "UPDATE user_details SET password = '{}' WHERE mobile_number = '{}' AND date_of_birth = '{}';".format(mob_encrypt_new_password,mobile_number_data[0][0],mob_dob)
                                             try:
                                                 CreateConnection.cursor.execute(mob_pass_query)
                                                 CreateConnection.db.commit()
@@ -225,19 +221,18 @@ def update():
             elif(option_password==3):
                 print("First you need to login : ")
                 email_login = input("Email : ").lower()
-                login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+                login_querry = "SELECT COUNT(email_id) FROM user_details WHERE email_id = '{}';".format(email_login)
                 try:
                     CreateConnection.cursor.execute(login_querry)
                     data1 = CreateConnection.cursor.fetchall()
                     if(data1[0][0]>0):
                         password_login = input("Old Password : ")
-                        pass_query = "SELECT Password FROM user_details WHERE Email = '{}';".format(email_login)
+                        pass_query = "SELECT password FROM user_details WHERE email_id = '{}';".format(email_login)
                         try:
                             CreateConnection.cursor.execute(pass_query)
                             old_password_data = CreateConnection.cursor.fetchall()
                             ph = PasswordHasher()
                             password1 = ''
-                            print(old_password_data[0][0])
                             if(ph.verify(old_password_data[0][0],password_login)):
                                 dummy = True
                                 while(dummy):
@@ -249,7 +244,7 @@ def update():
                                             dummy = True
                                         elif(password_check(password1)):
                                             encrypt_new_password = argon2_algo(password1)
-                                            old_password_query = "UPDATE user_details SET Password = '{}' WHERE Email = '{}' AND Password = '{}';".format(encrypt_new_password,email_login,old_password_data[0][0])
+                                            old_password_query = "UPDATE user_details SET password = '{}' WHERE email_id = '{}' AND password = '{}';".format(encrypt_new_password,email_login,old_password_data[0][0])
                                             try:
                                                 CreateConnection.cursor.execute(old_password_query)
                                                 CreateConnection.db.commit()
@@ -260,8 +255,7 @@ def update():
                                         else:
                                             dummy = True
                                     else:
-                                        print("Your new password and confirm password are not same..")   
-                                
+                                        print("Your new password and confirm password are not same..")
                             else:
                                 print("Wrong Password!")
                         except Exception as e:
@@ -282,13 +276,13 @@ def update():
         other_option = int(input("Select from these :- \n 1.Address \n 2.City \n 3.State \n 4.Country \n 5.Pin Code \n 6.Date Of Birth \n Enter : "))
         print("First you need to login and then you able to edit your details.")
         email_login = input("Email : ").lower()
-        login_querry = "SELECT COUNT(Email) FROM user_details WHERE email = '{}';".format(email_login)
+        login_querry = "SELECT COUNT(email_id) FROM user_details WHERE email_id = '{}';".format(email_login)
         try:
             CreateConnection.cursor.execute(login_querry)
             data1 = CreateConnection.cursor.fetchall()
             if(data1[0][0]>0):
                 password_login = input("Password : ")
-                pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                pass_query = "SELECT password FROM user_details WHERE email_id = '{}';".format(email_login)
                 try:
                     CreateConnection.cursor.execute(pass_query)
                     data2 = CreateConnection.cursor.fetchall()
@@ -304,6 +298,13 @@ def update():
                                     dummy = False
                                 else:
                                     print("Address Invalid Please Provide Valid Address")
+                            address_query = "UPDATE user_details SET address = '{}' WHERE email_id = '{}' AND password = '{}';".format(address,email_login,data2[0][0])
+                            try:
+                                CreateConnection.cursor.execute(address_query)
+                                CreateConnection.db.commit()
+                                print("Successful")
+                            except Exception as e:
+                                print("Error!!")
                         elif(other_option == 2):
                             dummy = True
                             while(dummy):
@@ -314,6 +315,13 @@ def update():
                                     dummy = False
                                 else:
                                     print("City Invalid Please Provide Valid City")
+                            city_query = "UPDATE user_details SET city = '{}' WHERE email_id = '{}' AND password = '{}';".format(city,email_login,data2[0][0])
+                            try:
+                                CreateConnection.cursor.execute(city_query)
+                                CreateConnection.db.commit()
+                                print("Successful")
+                            except Exception as e:
+                                print("Error!!")
                         elif(other_option == 3):
                             dummy = True
                             while(dummy):
@@ -324,26 +332,47 @@ def update():
                                     dummy = False
                                 else:
                                     print("State Invalid Please Provide Valid State")
+                            state_query = "UPDATE user_details SET state = '{}' WHERE email_id = '{}' AND password = '{}';".format(state,email_login,data2[0][0])
+                            try:
+                                CreateConnection.cursor.execute(state_query)
+                                CreateConnection.db.commit()
+                                print("Successful")
+                            except Exception as e:
+                                print("Error!!")
                         elif(other_option == 4):
                             dummy = True
                             while(dummy):
-                                state = input("Enter Your State : ")
-                                if(state==''):
-                                    print("Please Write Your State")
-                                elif state.replace(" ", "").isalpha():
+                                country = input("Enter Your Country : ")
+                                if(country==''):
+                                    print("Please Write Your country")
+                                elif country.replace(" ", "").isalpha():
                                     dummy = False
                                 else:
-                                    print("State Invalid Please Provide Valid State")
+                                    print("Country Invalid Please Provide Valid Country")
+                            country_query = "UPDATE user_details SET country = '{}' WHERE email_id = '{}' AND password = '{}';".format(country,email_login,data2[0][0])
+                            try:
+                                CreateConnection.cursor.execute(country_query)
+                                CreateConnection.db.commit()
+                                print("Successful")
+                            except Exception as e:
+                                print("Error!!")
                         elif(other_option == 5):
                             dummy = True
                             while(dummy):
-                                pincode = input("PinCode : ")
-                                if(pincode == ""):
+                                pin_code = input("PinCode : ")
+                                if(pin_code == ""):
                                     dummy = False
-                                if(pincode_verification(pincode)):
+                                if(pincode_verification(pin_code)):
                                     dummy = False
                                 else:
                                     print("Wrong Pin Code Please Provide Valid Pin Code")
+                            pincode_query = "UPDATE user_details SET pin_code = '{}' WHERE email_id = '{}' AND password = '{}';".format(pin_code,email_login,data2[0][0])
+                            try:
+                                CreateConnection.cursor.execute(pincode_query)
+                                CreateConnection.db.commit()
+                                print("Successful")
+                            except Exception as e:
+                                print("Error!!")
 
                         elif(other_option == 6):
                             dummy = True
@@ -354,6 +383,13 @@ def update():
                                 else:
                                     print("Incorrect DOB!")
                                     dummy = True
+                            dob_query = "UPDATE user_details SET date_of_birth = '{}' WHERE email_id = '{}' AND password = '{}';".format(dob,email_login,data2[0][0])
+                            try:
+                                CreateConnection.cursor.execute(dob_query)
+                                CreateConnection.db.commit()
+                                print("Successful")
+                            except Exception as e:
+                                print("Error!!")
                         else:
                             print("You select wrong option please try again!!")
                     else:

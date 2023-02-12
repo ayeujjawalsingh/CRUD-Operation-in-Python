@@ -137,7 +137,7 @@ def insert():
             dummy = True
     
     # Query
-    Query = "INSERT INTO user_details(Name,Mobile,Email,Password,Address,City,State,PinCode,DateOfBirth) VALUES('{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(fname,mobile,email,encrypt_password,address,city,state,pin_code,dob)
+    Query = "INSERT INTO user_details(first_name,last_name,mobile_number,email_id,password,address,city,state,country,pin_code,date_of_birth) VALUES('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}');".format(fname,lname,mobile,email,encrypt_password,address,city,state,country,pin_code,dob)
     try:
         CreateConnection.cursor.execute(Query)
         CreateConnection.db.commit()
