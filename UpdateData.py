@@ -36,15 +36,12 @@ def update():
                 password_login = input("Password : ")
                 pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
                 try:
-                    print("Enter 1")
                     CreateConnection.cursor.execute(pass_query)
                     data2 = CreateConnection.cursor.fetchall()
                     ph = PasswordHasher()
-                    print("Enter 2")
                     if(ph.verify(data2[0][0],password_login)):
                         dummy = True
                         fname = ""
-                        print("Enter 3")
                         while(dummy):
                             fname = input("Enter Your First Name : ")
                             if(fname==''):
@@ -125,32 +122,106 @@ def update():
     elif(option1==3):
         ans = input("Do You Want to change Your Password : (Y/N) ")
         if(ans == "Y" or ans == "y"):
-            option_password = int(input("We must first confirm that you are a genuine person or not, \n Please select these option \n 1. Email \n 2. Mobile \n 3. Old Password \n Select : "))
-            if(option_password == 1):
-                em = input("Enter your email : ")
-                QueryEmailPass = "Select Email From user_details"
-                try:
-                    CreateConnection.cursor.execute(QueryEmailPass)
-                    email_pass = CreateConnection.cursor.fetchall()
-                    print(type(email_pass[1]))
-                    if em in email_pass:
-                        dob_pass = input("Please provide your Date Of Birth (DD/MM/YYYY) : ")
-                        QueryDobPass = "SELECT DateOfBirth FROM person WHERE name = '{}';".format(em)
-                        try:
-                            CreateConnection.cursor.execute(QueryDobPass)
-                            dobemailpass = CreateConnection.cursor.fetchall()
-                            if(dob_pass == dobemailpass):
-                                pas = input("Enter New Password : ")
-                                encrypt_password = argon2_algo(pas)
-                        except Exception as e:
-                            print("Error")
-                    else:
-                        print('Please provide a validate email..')
-                        
-                            
-                except Exception as e:
-                    print(e)
+            option_password = int(input("We must first confirm that you are a genuine person or not, \n Please select these option \n 1. Email \n 2. Mobile \n 3. Old Password \n Enter : "))
             
+            # Update Password Using Email and the DOB
+            if(option_password == 1):
+                print("Update Password Using Email")
+                email_id = input("Email : ").lower()
+                update_query_email = "SELECT COUNT(Email) FROM user_details WHERE Email = '{}';".format(email_id)
+                try:
+                    CreateConnection.cursor.execute(update_query_email)
+                    email_id_data = CreateConnection.cursor.fetchall()
+                    if(email_id_data[0][0]>0):
+                        email_dob = input("Enter your Date of Birth (DD/MM/YYYY) : ")
+                        email_dob_query = "SELECT DateOfBirth FROM user_details WHERE Email = '{}';".format(email_id)
+                        try:
+                            CreateConnection.cursor.execute(email_dob_query)
+                            email_dob_data = CreateConnection.cursor.fetchall()
+                            if(email_dob_data[0][0]==email_dob):
+                                dummy = True
+                                email_password1 = ''
+                                while(dummy):
+                                    email_password1 = input("New Password : ")
+                                    email_password2 = input("Confirm Password : ")
+                                    if(email_password1 == email_password2):
+                                        if(email_password1==''):
+                                            print("Please Write your Password")
+                                            dummy = True
+                                        elif(password_check(email_password1)):
+                                            email_encrypt_new_password = argon2_algo(email_password1)
+                                            email_pass_query = "UPDATE user_details SET Password = '{}' WHERE Email = '{}' AND DateOfBirth = '{}';".format(email_encrypt_new_password,email_id,email_dob)
+                                            try:
+                                                CreateConnection.cursor.execute(email_pass_query)
+                                                CreateConnection.db.commit()
+                                                print("Successful")
+                                            except Exception as e:
+                                                print("Error!!")
+                                            dummy = False
+                                        else:
+                                            dummy = True
+                                    else:
+                                        print("Your new password and confirm password are not same..")
+                            else:
+                                print("Wrong DOB!")
+                        except Exception as e:
+                            print(e)
+                    else:
+                        print("Wrong Email")
+                except Exception as e:
+                    print("Error")
+            
+            # Update Password Using Mobile Number and then DOB
+            elif(option_password==2):
+                print("Update Password Using Mobile Number : ")
+                mobile_number = input("Mobile Number : ")
+                update_query_mobile = "SELECT COUNT(Mobile) FROM user_details WHERE Mobile = '{}';".format(mobile_number)
+                try:
+                    CreateConnection.cursor.execute(update_query_mobile)
+                    mobile_number_data = CreateConnection.cursor.fetchall()
+                    if(mobile_number_data[0][0]>0):
+                        print(mobile_number_data[0][0])
+                        mob_dob = input("Enter your Date of Birth (DD/MM/YYYY) : ")
+                        mob_dob_query = "SELECT DateOfBirth FROM user_details WHERE Mobile = '{}';".format(mobile_number)
+                        try:
+                            CreateConnection.cursor.execute(mob_dob_query)
+                            mob_dob_data = CreateConnection.cursor.fetchall()
+                            print(mob_dob_data)
+                            if(mob_dob_data[0][0]==mob_dob):
+                                print("Mob Enter 2")
+                                dummy = True
+                                mob_password1 = ''
+                                while(dummy):
+                                    mob_password1 = input("New Password : ")
+                                    mob_password2 = input("Confirm Password : ")
+                                    if(mob_password1 == mob_password2):
+                                        if(mob_password1==''):
+                                            print("Please Write your Password")
+                                            dummy = True
+                                        elif(password_check(mob_password1)):
+                                            mob_encrypt_new_password = argon2_algo(mob_password1)
+                                            mob_pass_query = "UPDATE user_details SET Password = '{}' WHERE Mobile = '{}' AND DateOfBirth = '{}';".format(mob_encrypt_new_password,mobile_number_data[0][0],mob_dob)
+                                            try:
+                                                CreateConnection.cursor.execute(mob_pass_query)
+                                                CreateConnection.db.commit()
+                                                print("Successful")
+                                            except Exception as e:
+                                                print("Error!!")
+                                            dummy = False
+                                        else:
+                                            dummy = True
+                                    else:
+                                        print("Your new password and confirm password are not same..")
+                            else:
+                                print("Wrong Password!")
+                        except Exception as e:
+                            print(e)
+                    else:
+                        print("Wrong Email")
+                except Exception as e:
+                    print("Error")
+            
+            #  Update Password Using Old Password
             elif(option_password==3):
                 print("First you need to login : ")
                 email_login = input("Email : ").lower()
@@ -160,12 +231,13 @@ def update():
                     data1 = CreateConnection.cursor.fetchall()
                     if(data1[0][0]>0):
                         password_login = input("Old Password : ")
-                        pass_query = "SELECT Password FROM user_details WHERE email = '{}';".format(email_login)
+                        pass_query = "SELECT Password FROM user_details WHERE Email = '{}';".format(email_login)
                         try:
                             CreateConnection.cursor.execute(pass_query)
                             old_password_data = CreateConnection.cursor.fetchall()
                             ph = PasswordHasher()
                             password1 = ''
+                            print(old_password_data[0][0])
                             if(ph.verify(old_password_data[0][0],password_login)):
                                 dummy = True
                                 while(dummy):
