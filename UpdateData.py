@@ -6,19 +6,6 @@ from phonenumbers.phonenumberutil import number_type
 from datetime import datetime
 from datetime import date, timedelta
 
-# fname = ''
-# lname = ''
-# mobile = ''
-# email = ''
-# password = ''
-# address = ''
-# city = ''
-# state =''
-# country = ''
-# pincode = ''
-# dob = ''
-
-
 def update():
     print("Choose an Option : \n 1. User Name \n 2. Email \n 3. Password \n 4. Others")
     option1 = int(input("Enter Your Choise : "))
